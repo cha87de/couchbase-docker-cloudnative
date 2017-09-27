@@ -2,14 +2,15 @@ This couchbase docker container provides initialization
 via environment variables. Apart from that it is based on
 the latest official couchbase ce docker image from docker hub.
 
+The resulting docker image is automatically build on docker hub: https://hub.docker.com/r/cha87de/couchbase-cloudnative/
+
 Usage with docker-compose:
 
 ```
 version: '2'
 services:
     couchbase:
-        build: .
-        image: vice-db
+        image: cha87de/couchbase-cloudnative
         environment:
          - CLUSTER=localhost
          - USER=admin
