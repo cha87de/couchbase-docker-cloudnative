@@ -1,0 +1,16 @@
+version: '2'
+services:
+    couchbase:
+        build: .
+        image: vice-db
+        environment:
+         - CLUSTER=localhost
+         - USER=admin
+         - PASS=secret
+         - PORT=8091
+         - RAMSIZEMB=2048
+         - RAMSIZEINDEXMB=512
+         - RAMSIZEFTSMB=512
+         - BUCKETS=
+         - BUCKETSIZES=
+         - AUTOREBALANCE=true
