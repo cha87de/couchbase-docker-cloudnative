@@ -198,15 +198,24 @@ function main(){
         exit 1
     fi
 
+    # validate if all env vars are present
+    params=("RETRIES_INIT RETRIES_ADDBUCKETS")
+    for var in $params ; do 
+        if [ -z ${!var+x} ]; then 
+            echo "$var is unset. skipping initialization of cluster."
+            return 0
+        fi        
+    done
+
     echo "now initializing couchbase ..."
-    retry 5 "cannot initialize couchbase" initializeCluster
+    retry $RETRIES_INIT "cannot initialize couchbase" initializeCluster
     if [[ $? != 0 ]]; then 
         echo "init failed. exiting now." >&2
         exit 1
     fi
 
     echo "try to create buckets"
-    retry 5 "failed to add buckets" initializeAddBuckets
+    retry $RETRIES_ADDBUCKETS "failed to add buckets" initializeAddBuckets
     if [[ $? != 0 ]]; then 
         echo "failed to add buckets to cluster.  please trigger again manually." >&2
     fi
