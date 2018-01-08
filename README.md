@@ -1,3 +1,7 @@
+
+**WARNING:** Couchbase has some issues when running in a typical cloud setup! Your data may be lost!
+Follow https://github.com/couchbase/docker/issues/83 for more details. If you still want/have to use it, go ahead.
+
 This couchbase docker container provides initialization
 via environment variables. Apart from that it is based on
 the latest official couchbase ce docker image from docker hub.
