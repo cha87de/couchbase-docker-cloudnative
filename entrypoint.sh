@@ -90,22 +90,22 @@ function initializeAddHost(){
 # Returns:
 #   1 on failure. 0 on success
 #
-# Author: Christopher Hauser <post@c-ha.de>
+# Authors: Christopher Hauser <post@c-ha.de>, Jérôme Bertaux <bertauxjeje@hotmail.com>
 #######################################
 function initializeAddBuckets(){
-    
-    # validate if all env vars are present    
+
+    # validate if all env vars are present
     params=("BUCKETSIZES BUCKETS")
-    for var in $params ; do 
-        if [ -z ${!var+x} ]; then 
+    for var in $params ; do
+        if [ -z ${!var+x} ]; then
             echo "$var is unset. skipping initialization of buckets."
             return 0
-        fi        
+        fi
     done
 
     i=0
     sizes=($BUCKETSIZES)
-    for bucket in $BUCKETS; do 
+    for bucket in $BUCKETS; do
         if [[ $(couchbase-cli bucket-list -c $CLUSTER -u $USER -p $PASS | grep -Fx $bucket) ]]; then
             echo "bucket $bucket exists. skipping."
             continue
@@ -118,10 +118,21 @@ function initializeAddBuckets(){
             --bucket-ramsize=$size \
             --bucket-replica=1 \
             --wait
-        if [[ $? != 0 ]]; then 
+        if [[ $? != 0 ]]; then
             echo "failed to create buckets." >&2
             return 1
         fi
+
+        echo "create user for bucket $bucket"
+        couchbase-cli user-manage -c $CLUSTER -u $USER -p $PASS \
+            --set --rbac-username $bucket --rbac-password $PASS \
+            --rbac-name $bucket --roles bucket_admin[$bucket],bucket_full_access[$bucket] \
+            --auth-domain local
+        if [[ $? != 0 ]]; then
+            echo "failed to create user bucket." >&2
+            return 1
+        fi
+
         let i+=1
     done
 }
